@@ -5,16 +5,15 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/williamchang80/sea-apd/controller/http/user"
-
-	ucUser "github.com/williamchang80/sea-apd/usecase/user"
-
-	"github.com/williamchang80/sea-apd/repository"
-
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/williamchang80/sea-apd/controller/http/product"
+	"github.com/williamchang80/sea-apd/controller/http/user"
 	"github.com/williamchang80/sea-apd/infrastructure/config"
 	"github.com/williamchang80/sea-apd/infrastructure/db"
+	"github.com/williamchang80/sea-apd/repository"
+	product2 "github.com/williamchang80/sea-apd/usecase/product"
+	ucUser "github.com/williamchang80/sea-apd/usecase/user"
 )
 
 func init() {
@@ -29,6 +28,10 @@ func main() {
 
 	r := mux.NewRouter()
 	db := db.Postgres()
+
+	k := repository.NewProductRepository(db)
+	t := product2.NewProductUseCaseImpl(k)
+	product.NewProductController(r, t)
 
 	userRepo := repository.NewUserRepository(db)
 	userCImpl := ucUser.NewAdminUseCaseImpl(userRepo)
