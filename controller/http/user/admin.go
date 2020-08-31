@@ -1,53 +1,34 @@
 package user
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
-
-	"github.com/gorilla/mux"
-	domainUser "github.com/williamchang80/sea-apd/domain/user"
-	"github.com/williamchang80/sea-apd/usecase/user"
+	"github.com/labstack/echo"
+	"github.com/williamchang80/sea-apd/domain"
+	"github.com/williamchang80/sea-apd/dto/request"
 
 	"net/http"
 )
 
 // AdminController ...
 type AdminController struct {
-	ac user.AdminUseCase
+	usecase domain.AdminUsecase
 }
 
 // NewAdminController ...
-func NewAdminController(r *mux.Router, a user.AdminUseCase) {
+func NewAdminController(e *echo.Echo, a domain.AdminUsecase) domain.AdminController {
 	c := &AdminController{
-		ac: a,
+		usecase: a,
 	}
-	r.HandleFunc("/users/v1/register-admin", c.RegisterAdmin)
+	e.POST("/users/register-admin", c.RegisterAdmin)
+	return c
 }
 
 // RegisterAdmin ...
-func (a *AdminController) RegisterAdmin(r http.ResponseWriter, req *http.Request) {
-	var u domainUser.User
+func (a *AdminController) RegisterAdmin(c echo.Context) error {
+	var adminRequest request.Admin
+	c.Bind(&adminRequest)
 
-	err := json.NewDecoder(req.Body).Decode(&u)
-	if err != nil {
-		http.Error(r, err.Error(), http.StatusBadRequest)
+	if err := a.usecase.RegisterAdmin(adminRequest); err != nil {
+		return c.JSON(http.StatusInternalServerError, "err")
 	}
-
-	validateErr := u.Validate("")
-	if validateErr != "" {
-		http.Error(r, validateErr, http.StatusBadRequest)
-	}
-
-	user, err := a.ac.RegisterAdmin(u)
-	if err != nil {
-		log.Panic("Error")
-	}
-
-	o, err := json.Marshal(user)
-	if err != nil {
-		log.Panic("Error")
-	}
-
-	fmt.Fprintf(r, string(o))
+	return c.JSON(http.StatusOK, "Admin created successfully")
 }

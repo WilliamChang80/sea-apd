@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
-	"github.com/joho/godotenv"
+	"github.com/williamchang80/sea-apd/controller/http/user"
+
 	"github.com/labstack/echo"
 	"github.com/williamchang80/sea-apd/controller/http/product"
 	"github.com/williamchang80/sea-apd/infrastructure/db"
@@ -14,18 +14,18 @@ import (
 	"github.com/williamchang80/sea-apd/usecase"
 )
 
-func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Cannot read .env file")
-	}
-}
-
 func main() {
 	e := echo.New()
 	db := db.Postgres()
+
 	k := postgres.NewProductRepository(db)
 	t := usecase.NewProductUseCase(k)
 	product.NewProductController(e, t)
+
+	userRepo := postgres.NewUserRepository(db)
+	adminUC := usecase.NewAdminUseCase(userRepo)
+	user.NewAdminController(e, adminUC)
+
 	appPort := ":" + os.Getenv("APP_PORT")
 	appHost := fmt.Sprintf("http://%s%v", os.Getenv("APP_HOST"), appPort)
 	fmt.Println("App is running on " + appHost)

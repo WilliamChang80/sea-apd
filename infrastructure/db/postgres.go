@@ -2,23 +2,33 @@ package db
 
 import (
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/jinzhu/gorm"
-	_ "github.com/lib/pq" // inject pq
-	"github.com/williamchang80/sea-apd/infrastructure/config"
+	_ "github.com/jinzhu/gorm/dialects/postgres" // inject postgres
+	"github.com/joho/godotenv"
 )
 
 const driver = "postgres"
 
-// Postgres conn config
+// Postgres ...
 func Postgres() *gorm.DB {
-	conf := config.New()
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		conf.PgHost, conf.PgPort, conf.PgUser, conf.PgPassword, conf.PgName)
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	host := os.Getenv("PG_HOST")
+	port := os.Getenv("PG_PORT")
+	dbname := os.Getenv("PG_NAME")
+	user := os.Getenv("PG_USER")
+	password := os.Getenv("PG_PASSWORD")
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
 	db, err := gorm.Open(driver, psqlInfo)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
-
 	return db
 }
