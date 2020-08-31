@@ -2,27 +2,30 @@ package product
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/williamchang80/sea-apd/usecase/product"
+	"github.com/labstack/echo"
+	"github.com/williamchang80/sea-apd/domain"
+	"github.com/williamchang80/sea-apd/dto/request"
 	"log"
 	"net/http"
 )
 
 type ProductController struct {
-	pc product.ProductUseCase
+	usecase domain.ProductUsecase
 }
 
-func NewProductController(r *mux.Router, p product.ProductUseCase) {
+func NewProductController(e *echo.Echo, p domain.ProductUsecase) domain.ProductController {
 	c := &ProductController{
-		pc: p,
+		usecase: p,
 	}
-	r.HandleFunc("/products", c.GetProducts)
+	e.GET("/products", c.GetProducts)
+	e.POST("/products", c.CreateProduct)
+	e.GET("/product", c.GetProductById)
+	e.DELETE("/product", c.DeleteProduct)
+	return c
 }
 
-func (p *ProductController) GetProducts(r http.ResponseWriter, w *http.Request) {
-	c := w.Context()
-	products, err := p.pc.GetProducts(c)
+func (p *ProductController) GetProducts(c echo.Context) error {
+	products, err := p.usecase.GetProducts()
 	if err != nil {
 		log.Panic("Error")
 	}
@@ -30,5 +33,42 @@ func (p *ProductController) GetProducts(r http.ResponseWriter, w *http.Request) 
 	if err != nil {
 		log.Panic("Error")
 	}
-	fmt.Fprintf(r, string(s))
+	return c.JSON(http.StatusOK, string(s))
+}
+
+func (p *ProductController) CreateProduct(c echo.Context) error {
+	var productRequest request.Product
+	c.Bind(&productRequest)
+	if err := p.usecase.CreateProduct(productRequest); err != nil {
+		return c.JSON(http.StatusInternalServerError, "err")
+	}
+	return c.JSON(http.StatusOK, "err")
+}
+
+func (p *ProductController) GetProductById(context echo.Context) error {
+	id := context.QueryParam("productId")
+	res, err := p.usecase.GetProductById(id)
+	if err != nil {
+		return context.JSON(http.StatusNotFound, "Not Found")
+	}
+	s, err := json.Marshal(res)
+	if err != nil {
+		log.Panic("Error")
+	}
+	return context.JSON(http.StatusOK, string(s))
+}
+
+func (p *ProductController) UpdateProduct(context echo.Context) error {
+	context.FormValue("productRequest")
+	//TODO implement later
+	return nil
+}
+
+func (p *ProductController) DeleteProduct(context echo.Context) error {
+	id := context.QueryParam("productId")
+	err := p.usecase.DeleteProduct(id)
+	if err != nil {
+		return context.JSON(http.StatusNotFound, "Not Found")
+	}
+	return context.JSON(http.StatusOK, "Success")
 }

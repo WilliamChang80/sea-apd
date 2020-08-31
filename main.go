@@ -4,16 +4,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
-	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo"
 	"github.com/williamchang80/sea-apd/controller/http/product"
-	"github.com/williamchang80/sea-apd/controller/http/user"
-	"github.com/williamchang80/sea-apd/infrastructure/config"
 	"github.com/williamchang80/sea-apd/infrastructure/db"
-	"github.com/williamchang80/sea-apd/repository"
-	product2 "github.com/williamchang80/sea-apd/usecase/product"
-	ucUser "github.com/williamchang80/sea-apd/usecase/user"
+	"github.com/williamchang80/sea-apd/repository/postgres"
+	"github.com/williamchang80/sea-apd/usecase"
 )
 
 func init() {
@@ -23,20 +21,13 @@ func init() {
 }
 
 func main() {
-	conf := config.New()
-	appHost := fmt.Sprintf("http://%s:%s", conf.AppHost, conf.AppPort)
-
-	r := mux.NewRouter()
+	e := echo.New()
 	db := db.Postgres()
-
-	k := repository.NewProductRepository(db)
-	t := product2.NewProductUseCaseImpl(k)
-	product.NewProductController(r, t)
-
-	userRepo := repository.NewUserRepository(db)
-	userCImpl := ucUser.NewAdminUseCaseImpl(userRepo)
-	user.NewAdminController(r, userCImpl)
-
+	k := postgres.NewProductRepository(db)
+	t := usecase.NewProductUseCase(k)
+	product.NewProductController(e, t)
+	appPort := ":" + os.Getenv("APP_PORT")
+	appHost := fmt.Sprintf("http://%s%v", os.Getenv("APP_HOST"), appPort)
 	fmt.Println("App is running on " + appHost)
-	fmt.Println(http.ListenAndServe(":"+conf.AppPort, r))
+	http.ListenAndServe(appPort, e)
 }
