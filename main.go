@@ -38,5 +38,5 @@ func main() {
 	user.NewAdminController(r, userCImpl)
 
 	fmt.Println("App is running on " + appHost)
-	http.ListenAndServe(conf.AppPort, r)
+	fmt.Println(http.ListenAndServe(":"+conf.AppPort, r))
 }
