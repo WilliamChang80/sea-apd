@@ -1,4 +1,4 @@
-package usecase
+package user
 
 import (
 	"github.com/williamchang80/sea-apd/domain"
@@ -11,7 +11,7 @@ type AdminUsecase struct {
 }
 
 // ConvertToDomain ...
-func AdminToDomain(a request.Admin) domain.User {
+func ConvertToDomain(a request.Admin) domain.User {
 	return domain.User{
 		Name:     a.Name,
 		Email:    a.Email,
@@ -29,7 +29,7 @@ func NewAdminUseCase(a domain.UserRepository) domain.AdminUsecase {
 
 // RegisterAdmin ...
 func (s *AdminUsecase) RegisterAdmin(admin request.Admin) error {
-	a := AdminToDomain(admin)
+	a := ConvertToDomain(admin)
 	err := s.ur.CreateUser(a)
 	if err != nil {
 		return err

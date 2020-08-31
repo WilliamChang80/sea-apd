@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/williamchang80/sea-apd/controller/http/user"
+	"github.com/williamchang80/sea-apd/usecase/user"
+
+	userCtrl "github.com/williamchang80/sea-apd/controller/http/user"
 
 	"github.com/labstack/echo"
 	"github.com/williamchang80/sea-apd/controller/http/product"
@@ -23,8 +25,8 @@ func main() {
 	product.NewProductController(e, t)
 
 	userRepo := postgres.NewUserRepository(db)
-	adminUC := usecase.NewAdminUseCase(userRepo)
-	user.NewAdminController(e, adminUC)
+	adminUC := user.NewAdminUseCase(userRepo)
+	userCtrl.NewAdminController(e, adminUC)
 
 	appPort := ":" + os.Getenv("APP_PORT")
 	appHost := fmt.Sprintf("http://%s%v", os.Getenv("APP_HOST"), appPort)
