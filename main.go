@@ -13,7 +13,7 @@ import (
 	"github.com/williamchang80/sea-apd/controller/http/product"
 	"github.com/williamchang80/sea-apd/infrastructure/db"
 	"github.com/williamchang80/sea-apd/repository/postgres"
-	"github.com/williamchang80/sea-apd/usecase"
+	product2 "github.com/williamchang80/sea-apd/usecase/product"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	db := db.Postgres()
 
 	k := postgres.NewProductRepository(db)
-	t := usecase.NewProductUseCase(k)
+	t := product2.NewProductUseCase(k)
 	product.NewProductController(e, t)
 
 	userRepo := postgres.NewUserRepository(db)
