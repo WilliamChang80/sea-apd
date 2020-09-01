@@ -1,6 +1,9 @@
 package user
 
 import (
+	"errors"
+
+	"github.com/jinzhu/gorm"
 	"github.com/williamchang80/sea-apd/domain"
 	"github.com/williamchang80/sea-apd/dto/request"
 )
@@ -29,8 +32,16 @@ func NewAdminUseCase(a domain.UserRepository) domain.AdminUsecase {
 
 // RegisterAdmin ...
 func (s *AdminUsecase) RegisterAdmin(admin request.Admin) error {
+	u, err := s.ur.GetUserByEmail(admin.Email)
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
+		return err
+	}
+	if u != nil {
+		return errors.New("duplicate")
+	}
+
 	a := ConvertToDomain(admin)
-	err := s.ur.CreateUser(a)
+	err = s.ur.CreateUser(a)
 	if err != nil {
 		return err
 	}

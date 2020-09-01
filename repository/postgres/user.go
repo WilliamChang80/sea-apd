@@ -27,3 +27,13 @@ func (u *UserRepository) CreateUser(user domain.User) error {
 
 	return nil
 }
+
+// GetUserByEmail ...
+func (u *UserRepository) GetUserByEmail(email string) (*domain.User, error) {
+	var user domain.User
+	err := u.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

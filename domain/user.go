@@ -20,6 +20,7 @@ type User struct {
 // UserRepository ...
 type UserRepository interface {
 	CreateUser(User) error
+	GetUserByEmail(string) (*User, error)
 }
 
 // AdminUsecase ...
