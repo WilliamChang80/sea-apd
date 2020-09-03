@@ -1,0 +1,13 @@
+name: Development Workflow
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Testing on test case
+        run: go test ./...
