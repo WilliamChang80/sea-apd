@@ -1,6 +1,6 @@
 version: '2.0'
 services:
-  web:
+  go-apps:
     image: williamchang80/sea-apd:1.0
     ports:
       - "8090:8090"
@@ -10,9 +10,10 @@ services:
       - PG_NAME=apd
       - PG_USER=compfest
       - PG_PASSWORD=s34*&apd
-  nginx:
-    image: nginx:alpine
+      - APP_PORT=8090
+  go-nginx:
+    image: williamchang80/nginx-apd:1.0
     ports:
       - "80:80"
     depends_on:
-      - "web"
+      - go-apps
