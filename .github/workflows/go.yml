@@ -64,7 +64,8 @@ jobs:
           port: 22
           script: |
             sudo su
-            echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+            sudo chmod 666 /var/run/docker.sock
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Pull image from dockerhub
         uses: appleboy/ssh-action@master
         with:
