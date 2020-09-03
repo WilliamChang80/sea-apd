@@ -7,21 +7,17 @@ on:
     branches: [ master ]
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
         with:
           go-version: ^1.13
         id: go
-
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
-
       - name: Get dependencies
         run: |
           go get -v -t -d ./...
@@ -29,16 +25,15 @@ jobs:
               curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
               dep ensure
           fi
-
       - name: Build
         run: go build -v .
-
       - name: Test
         run: go test ./...
 
   push_to_registry:
-    name: push image to registry
+    name: Push Image To Registry
     runs-on: ubuntu-latest
+    needs: [build]
     steps:
       - uses: actions/checkout@v1
       - name: Login to DockerHub Registry
@@ -54,3 +49,11 @@ jobs:
         run: docker build . --file Dockerfile --tag williamchang80/sea-apd:latest
       - name: Push the latest Docker image
         run: docker push williamchang80/sea-apd:latest
+  
+  deploy_to_heroku:
+    name: Deploy To Heroku
+    runs-on: ubuntu-latest
+    needs: [build, push_to_registry]
+    steps:
+      - name: Initialize
+        run: echo "Deploying...."
