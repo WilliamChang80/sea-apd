@@ -2,8 +2,11 @@ package user
 
 import (
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+	mid "github.com/williamchang80/sea-apd/controller/middleware"
 	"github.com/williamchang80/sea-apd/domain"
 	"github.com/williamchang80/sea-apd/dto/request"
+	"github.com/williamchang80/sea-apd/dto/response/base"
 
 	"net/http"
 )
@@ -19,6 +22,8 @@ func NewAdminController(e *echo.Echo, a domain.AdminUsecase) domain.AdminControl
 		usecase: a,
 	}
 	e.POST("/users/register-admin", c.RegisterAdmin)
+	e.Use(middleware.BasicAuth(mid.BasicAuthAdmin))
+
 	return c
 }
 
@@ -29,9 +34,18 @@ func (a *AdminController) RegisterAdmin(c echo.Context) error {
 
 	if err := a.usecase.RegisterAdmin(adminRequest); err != nil {
 		if err.Error() == "duplicate" {
-			return c.JSON(http.StatusBadRequest, "Email has been taken")
+			return c.JSON(http.StatusBadRequest, &base.BaseResponse{
+				Code:    http.StatusBadRequest,
+				Message: "Email has been taken",
+			})
 		}
-		return c.JSON(http.StatusInternalServerError, "err")
+		return c.JSON(http.StatusInternalServerError, &base.BaseResponse{
+			Code:    http.StatusInternalServerError,
+			Message: "Something Error",
+		})
 	}
-	return c.JSON(http.StatusOK, "Admin created successfully")
+	return c.JSON(http.StatusOK, &base.BaseResponse{
+		Code:    http.StatusCreated,
+		Message: "Admin created successfully",
+	})
 }
