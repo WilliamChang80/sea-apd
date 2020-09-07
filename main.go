@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -15,5 +16,5 @@ func main() {
 	appPort := ":" + os.Getenv("APP_PORT")
 	appHost := fmt.Sprintf("http://%s%v", os.Getenv("APP_HOST"), appPort)
 	fmt.Println("App is running on " + appHost)
-	http.ListenAndServe(appPort, e)
+	log.Panic(http.ListenAndServe(appPort, e))
 }
