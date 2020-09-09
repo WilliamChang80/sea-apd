@@ -3,12 +3,19 @@ package domain
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/jinzhu/gorm"
+	uuid "github.com/satori/go.uuid"
 )
 
-// Base ...
+func (Base) BeforeCreate(scope *gorm.Scope) error {
+	uuid := uuid.NewV4().String()
+	scope.SetColumn("id", uuid)
+	return nil
+}
+
 type Base struct {
-	ID        uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
-	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	ID        string     `gorm:"primary_key;" json:"id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `sql:"index" json:"deleted_at"`
 }

@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"github.com/williamchang80/sea-apd/common/security"
@@ -11,8 +10,8 @@ import (
 
 // User ...
 type User struct {
-	*domain.Base
-	Name     string `gorm:"size:50;not null;" json:"name"`
+	domain.Base
+	Username string `json:"username"`
 	Email    string `gorm:"unique;size:100;not null;" json:"email"`
 	Password string `gorm:"not null;" json:"password"`
 	Role     string `gorm:"size:1;not null;" json:"role"`
@@ -36,12 +35,6 @@ type AdminController interface {
 
 // BeforeCreate is a gorm hook
 func (u *User) BeforeCreate(scope *gorm.Scope) error {
-	id, err := uuid.NewRandom()
-	if err != nil {
-		return err
-	}
-	scope.SetColumn("ID", id)
-
 	hashPassword, err := security.Hash(u.Password)
 	if err != nil {
 		return err
