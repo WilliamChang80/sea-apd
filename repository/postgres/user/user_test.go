@@ -2,6 +2,7 @@ package user
 
 import (
 	"reflect"
+	"regexp"
 	"testing"
 	"time"
 
@@ -114,6 +115,54 @@ func TestUserRepository_CreateUser(t *testing.T) {
 			if err != nil && !tt.wantErr {
 				t.Errorf("UserRepository.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
+			}
+		})
+	}
+}
+
+func TestUserRepository_GetUseByEmail(t *testing.T) {
+	db, mocks := mock_psql.Connection()
+	defer db.Close()
+	type args struct {
+		email string
+	}
+	tests := []struct {
+		name     string
+		args     args
+		want     *domain.User
+		wantErr  bool
+		initMock func() *gorm.DB
+	}{
+		{
+			name: "failed witt record not found",
+			args: args{
+				email: "not@found.com",
+			},
+			want:    nil,
+			wantErr: true,
+			initMock: func() *gorm.DB {
+				mocks.ExpectQuery(regexp.QuoteMeta(`
+				select * FROM "users"
+				WHERE "users"."deleted_at" IS NULL AND
+				(("users"."id" = $1))
+				`))
+				return db
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ur := UserRepository{
+				db: tt.initMock(),
+			}
+			user, err := ur.GetUserByEmail(tt.args.email)
+			if err != nil && !tt.wantErr {
+				t.Errorf("UserRepository.GetUserByEmail() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(user, tt.want) {
+				t.Errorf("UserRepository.Where() = %v, wanr %v", user, tt.want)
 			}
 		})
 	}
