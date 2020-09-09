@@ -2,14 +2,15 @@ package product
 
 import (
 	"errors"
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jinzhu/gorm"
-	domain "github.com/williamchang80/sea-apd/domain/product"
-	mock_psql "github.com/williamchang80/sea-apd/mocks/postgres"
 	"reflect"
 	"regexp"
 	"testing"
 	"time"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/jinzhu/gorm"
+	domain "github.com/williamchang80/sea-apd/domain/product"
+	mock_psql "github.com/williamchang80/sea-apd/mocks/postgres"
 )
 
 func TestNewProductRepository(t *testing.T) {
