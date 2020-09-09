@@ -4,8 +4,8 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	mid "github.com/williamchang80/sea-apd/controller/middleware"
-	"github.com/williamchang80/sea-apd/domain"
-	"github.com/williamchang80/sea-apd/dto/request"
+	"github.com/williamchang80/sea-apd/domain/user"
+	"github.com/williamchang80/sea-apd/dto/request/admin"
 	"github.com/williamchang80/sea-apd/dto/response/base"
 
 	"net/http"
@@ -13,11 +13,11 @@ import (
 
 // AdminController ...
 type AdminController struct {
-	usecase domain.AdminUsecase
+	usecase user.AdminUsecase
 }
 
 // NewAdminController ...
-func NewAdminController(e *echo.Echo, a domain.AdminUsecase) domain.AdminController {
+func NewAdminController(e *echo.Echo, a user.AdminUsecase) user.AdminController {
 	c := &AdminController{
 		usecase: a,
 	}
@@ -29,7 +29,7 @@ func NewAdminController(e *echo.Echo, a domain.AdminUsecase) domain.AdminControl
 
 // RegisterAdmin ...
 func (a *AdminController) RegisterAdmin(c echo.Context) error {
-	var adminRequest request.Admin
+	var adminRequest admin.Admin
 	c.Bind(&adminRequest)
 
 	if err := a.usecase.RegisterAdmin(adminRequest); err != nil {

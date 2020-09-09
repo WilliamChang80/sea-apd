@@ -4,18 +4,18 @@ import (
 	"errors"
 
 	"github.com/jinzhu/gorm"
-	"github.com/williamchang80/sea-apd/domain"
-	"github.com/williamchang80/sea-apd/dto/request"
+	"github.com/williamchang80/sea-apd/domain/user"
+	"github.com/williamchang80/sea-apd/dto/request/admin"
 )
 
 // AdminUsecase ...
 type AdminUsecase struct {
-	ur domain.UserRepository
+	ur user.UserRepository
 }
 
 // ConvertToDomain ...
-func ConvertToDomain(a request.Admin) domain.User {
-	return domain.User{
+func ConvertToDomain(a admin.Admin) user.User {
+	return user.User{
 		Name:     a.Name,
 		Email:    a.Email,
 		Password: a.Password,
@@ -24,14 +24,14 @@ func ConvertToDomain(a request.Admin) domain.User {
 }
 
 // NewAdminUseCase ...
-func NewAdminUseCase(a domain.UserRepository) domain.AdminUsecase {
+func NewAdminUseCase(a user.UserRepository) user.AdminUsecase {
 	return &AdminUsecase{
 		ur: a,
 	}
 }
 
 // RegisterAdmin ...
-func (s *AdminUsecase) RegisterAdmin(admin request.Admin) error {
+func (s *AdminUsecase) RegisterAdmin(admin admin.Admin) error {
 	u, err := s.ur.GetUserByEmail(admin.Email)
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return err

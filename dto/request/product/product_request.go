@@ -5,9 +5,9 @@ import (
 )
 
 type ProductRequest struct {
-	Name string
-	Stock int
+	Name        string
+	Stock       int
 	Description string
-	Price int
-	Image multipart.File
+	Price       int
+	Image       multipart.File
 }
