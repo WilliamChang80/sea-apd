@@ -4,14 +4,13 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/labstack/echo"
 
 	"github.com/williamchang80/sea-apd/dto/request/admin"
 )
 
 var (
 	mockData = admin.Admin{
-		Name:     "admin",
+		Username: "admin",
 		Email:    "admin@admin.com",
 		Password: "p4ssw0rd",
 	}
@@ -21,5 +20,5 @@ var (
 func TestNewAdminController(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	ctx := echo.New()
+	// ctx := echo.New()
 }
