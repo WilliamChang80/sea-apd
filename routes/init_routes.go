@@ -11,9 +11,9 @@ type Routes struct {
 }
 
 func InitMainRoutes(echo *echo.Echo) {
-	NewUserRoute(echo)
 	NewMerchantRoute(echo)
 	NewProductRoutes(echo)
 	NewTransactionRoute(echo)
+	NewUserRoute(echo)
 	NewTransferRoute(echo)
 }
