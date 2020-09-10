@@ -21,7 +21,7 @@ func NewAdminController(e *echo.Echo, a user.AdminUsecase) user.AdminController 
 	c := &AdminController{
 		usecase: a,
 	}
-	e.POST("/users/register-admin", c.RegisterAdmin)
+	e.POST("api/users/register-admin", c.RegisterAdmin)
 	e.Use(middleware.BasicAuth(mid.BasicAuthAdmin))
 
 	return c
