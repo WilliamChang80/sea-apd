@@ -1,4 +1,5 @@
 .idea
 /vendor
-.env
 *.exe
+docker-compose.yml
+.env

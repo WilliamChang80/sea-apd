@@ -12,9 +12,6 @@ type UserRepository struct {
 
 // NewUserRepository ...
 func NewUserRepository(db *gorm.DB) user.UserRepository {
-	if db != nil {
-		db.AutoMigrate(&user.User{})
-	}
 	return &UserRepository{db: db}
 }
 
@@ -28,7 +25,7 @@ func (u *UserRepository) CreateUser(user user.User) error {
 }
 
 // GetUserByEmail ...
-func (u *UserRepository) GetUserByEmail(email string) (*user.User, error) {
+func (u UserRepository) GetUserByEmail(email string) (*user.User, error) {
 	var user user.User
 	err := u.db.Where("email = ?", email).First(&user).Error
 	if err != nil {

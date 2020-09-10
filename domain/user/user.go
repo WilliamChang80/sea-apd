@@ -6,6 +6,7 @@ import (
 	"github.com/williamchang80/sea-apd/common/security"
 	"github.com/williamchang80/sea-apd/domain"
 	"github.com/williamchang80/sea-apd/dto/request/admin"
+	"github.com/williamchang80/sea-apd/dto/request/auth"
 )
 
 // User ...
@@ -28,9 +29,17 @@ type AdminUsecase interface {
 	RegisterAdmin(admin.Admin) error
 }
 
+type UserUsecase interface {
+	CreateUser(request auth.RegisterUserRequest) error
+}
+
 // AdminController ...
 type AdminController interface {
 	RegisterAdmin(echo.Context) error
+}
+
+type UserController interface {
+	CreateUser(echo.Context) error
 }
 
 // BeforeCreate is a gorm hook
