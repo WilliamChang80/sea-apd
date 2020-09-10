@@ -69,7 +69,7 @@ func TestUserRepository_CreateUser(t *testing.T) {
 			name: "fail with invalid db query",
 			args: args{
 				user: domain.User{
-					Username: "username",
+					Name:     "name",
 					Email:    "email",
 					Password: "password",
 					Role:     "0",

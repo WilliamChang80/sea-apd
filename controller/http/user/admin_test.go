@@ -16,7 +16,7 @@ import (
 
 var (
 	mockData = admin.Admin{
-		Username: "admin",
+		Name:     "admin",
 		Email:    "admin@admin.com",
 		Password: "p4ssw0rd",
 	}

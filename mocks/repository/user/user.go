@@ -33,7 +33,7 @@ func (m MockRepository) CreateUser(user domain.User) error {
 func (m MockRepository) GetUserByEmail(email string) (*domain.User, error) {
 	if email != "" {
 		return &domain.User{
-			Username: "username",
+			Name:     "name",
 			Email:    "email",
 			Password: "password",
 			Role:     "0",
