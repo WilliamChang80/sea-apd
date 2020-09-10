@@ -16,7 +16,7 @@ type AdminUsecase struct {
 // ConvertToDomain ...
 func ConvertToDomain(a admin.Admin) user.User {
 	return user.User{
-		Username: a.Username,
+		Name:     a.Name,
 		Email:    a.Email,
 		Password: a.Password,
 		Role:     "0",
