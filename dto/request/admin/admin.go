@@ -2,7 +2,7 @@ package admin
 
 // Admin ...
 type Admin struct {
-	Name     string
+	Token    string
 	Email    string
 	Password string
 }

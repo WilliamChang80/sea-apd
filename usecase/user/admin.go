@@ -2,48 +2,61 @@ package user
 
 import (
 	"errors"
+	"os"
 
-	"github.com/jinzhu/gorm"
+	"github.com/williamchang80/sea-apd/dto/request/auth"
+
+	"github.com/williamchang80/sea-apd/common/constants/user_role"
+	auth_domain "github.com/williamchang80/sea-apd/domain/auth"
 	"github.com/williamchang80/sea-apd/domain/user"
 	"github.com/williamchang80/sea-apd/dto/request/admin"
 )
 
 // AdminUsecase ...
 type AdminUsecase struct {
-	ur user.UserRepository
-}
-
-// ConvertToDomain ...
-func ConvertToDomain(a admin.Admin) user.User {
-	return user.User{
-		Name:     a.Name,
-		Email:    a.Email,
-		Password: a.Password,
-		Role:     "0",
-	}
+	ur      user.UserRepository
+	usecase auth_domain.AuthUsecase
 }
 
 // NewAdminUseCase ...
-func NewAdminUseCase(a user.UserRepository) user.AdminUsecase {
+func NewAdminUseCase(a user.UserRepository, usecase auth_domain.AuthUsecase) user.AdminUsecase {
 	return &AdminUsecase{
-		ur: a,
+		ur:      a,
+		usecase: usecase,
 	}
 }
 
 // RegisterAdmin ...
-func (s *AdminUsecase) RegisterAdmin(admin admin.Admin) error {
-	u, err := s.ur.GetUserByEmail(admin.Email)
-	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		return err
+func (s *AdminUsecase) RegisterAdmin(request admin.Admin) error {
+	authRequest := auth.LoginRequest{
+		Email:    request.Email,
+		Password: request.Password,
 	}
-	if u != nil {
-		return errors.New("duplicate")
+	if _, err := s.usecase.Login(authRequest); err != nil {
+		return err
 	}
 
-	a := ConvertToDomain(admin)
-	err = s.ur.CreateUser(a)
+	u, err := s.ur.GetUserByEmail(request.Email)
 	if err != nil {
+		return errors.New("credential not match")
+	}
+
+	isValid := validateToken(request.Token)
+	if isValid == false {
+		return errors.New("Token not valid")
+	}
+
+	if err := s.ur.UpdateUserRole(user_role.ToString(user_role.ADMIN), u.ID); err != nil {
 		return err
 	}
+
 	return nil
+}
+
+func validateToken(token string) bool {
+	if token == os.Getenv("ADMIN_TOKEN") {
+		return true
+	}
+
+	return false
 }

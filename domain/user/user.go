@@ -23,15 +23,14 @@ type User struct {
 type UserRepository interface {
 	CreateUser(User) error
 	GetUserByEmail(string) (*User, error)
+	UpdateUserRole(role string, userId string) error
+	GetUserById(userId string) (*User, error)
+	UpdateUser(User) error
 }
 
 // AdminUsecase ...
 type AdminUsecase interface {
 	RegisterAdmin(admin.Admin) error
-	GetUserByEmail(email string) (*User, error)
-	UpdateUserRole(role string, userId string) error
-	GetUserById(userId string) (*User, error)
-	UpdateUser(User) error
 }
 
 type UserUsecase interface {
