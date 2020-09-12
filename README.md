@@ -36,10 +36,10 @@ sea-apd/
 ```
 
 ## Included design pattern
-      - Observer
-      - Abstract factory
-      - Singleton
-      - Facade
+   - Observer
+   - Abstract factory
+   - Singleton
+   - Facade
 
 ## Features
   - Register Customer, Merchant and Admin
