@@ -35,6 +35,12 @@ sea-apd/
 ├── usecase             # to handle business logic
 ```
 
+## Included design pattern
+      - Observer
+      - Abstract factory
+      - Singleton
+      - Facade
+
 ## Features
   - Register Customer, Merchant and Admin
   - Reject Merchant proposal
