@@ -2,11 +2,14 @@ package transaction
 
 import (
 	"github.com/golang/mock/gomock"
+	"github.com/williamchang80/sea-apd/common/constants/transaction_status"
 	merchant3 "github.com/williamchang80/sea-apd/domain/merchant"
+	product2 "github.com/williamchang80/sea-apd/domain/product"
 	"github.com/williamchang80/sea-apd/domain/transaction"
 	request "github.com/williamchang80/sea-apd/dto/request/transaction"
 	transaction2 "github.com/williamchang80/sea-apd/mocks/repository/transaction"
 	"github.com/williamchang80/sea-apd/mocks/usecase/merchant"
+	"github.com/williamchang80/sea-apd/mocks/usecase/product"
 	"reflect"
 	"testing"
 )
@@ -16,18 +19,20 @@ var (
 		BankNumber: "123456789",
 		BankName:   "Mock Bank",
 		Amount:     10000,
-		UserId:     "1",
+		CustomerId: "1",
+		MerchantId: "1",
 	}
 	mockTransactionEntity = transaction.Transaction{
-		Status:     transactionStatus["ONPROGRESS"],
+		Status:     transaction_status.ToString(transaction_status.WAITING_CONFIRMATION),
 		BankNumber: "123456789",
 		BankName:   "Mock Bank",
 		Amount:     10000,
-		UserId:     "1",
+		CustomerId: "1",
+		MerchantId: "1",
 	}
 	mockUpdateTransaction = request.UpdateTransactionRequest{
 		TransactionId: "1",
-		Status:        "accepted",
+		Status:        transaction_status.ACCEPTED,
 	}
 	mockTransactionId = "1"
 	mockUserId        = "1"
@@ -37,8 +42,9 @@ func TestNewTransactionUsecase(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	type args struct {
-		repository transaction.TransactionRepository
-		usecase    merchant3.MerchantUsecase
+		repository     transaction.TransactionRepository
+		usecase        merchant3.MerchantUsecase
+		productUsecase product2.ProductUsecase
 	}
 	tests := []struct {
 		name string
@@ -48,17 +54,21 @@ func TestNewTransactionUsecase(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				repository: nil,
-				usecase:    merchant.NewMockUsecase(ctrl),
+				repository:     nil,
+				usecase:        merchant.NewMockUsecase(ctrl),
+				productUsecase: product.NewMockUsecase(ctrl),
 			},
 			want: &TransactionUsecase{
-				tr: nil, merchantUseCase: merchant.NewMockUsecase(ctrl),
+				tr: nil,
+				merchantUseCase: merchant.NewMockUsecase(ctrl),
+				productUseCase: product.NewMockUsecase(ctrl),
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewTransactionUsecase(tt.args.repository, tt.args.usecase); !reflect.DeepEqual(got, tt.want) {
+			if got := NewTransactionUsecase(tt.args.repository, tt.args.usecase,
+				tt.args.productUsecase); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewTransactionUseCase() = %v, want %v", got, tt.want)
 			}
 		})
@@ -86,7 +96,7 @@ func TestConvertToDomain(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := convertTransactionRequestToDomain(tt.args.productRequest); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ConvertToDomain() = %v, want %v", got, tt.want)
+				t.Errorf("ConvertToDomain() = %#v, want %#v", got, tt.want)
 			}
 		})
 	}
@@ -113,7 +123,8 @@ func TestTransactionUsecase_CreateTransaction(t *testing.T) {
 			initMock: func() transaction.TransactionUsecase {
 				t := transaction2.NewMockRepository(ctrl)
 				u := merchant.NewMockUsecase(ctrl)
-				return NewTransactionUsecase(t, u)
+				p := product.NewMockUsecase(ctrl)
+				return NewTransactionUsecase(t, u, p)
 			},
 		},
 		{
@@ -125,7 +136,8 @@ func TestTransactionUsecase_CreateTransaction(t *testing.T) {
 			initMock: func() transaction.TransactionUsecase {
 				t := transaction2.NewMockRepository(ctrl)
 				u := merchant.NewMockUsecase(ctrl)
-				return NewTransactionUsecase(t, u)
+				p := product.NewMockUsecase(ctrl)
+				return NewTransactionUsecase(t, u, p)
 			},
 		},
 	}
@@ -162,7 +174,8 @@ func TestTransactionUsecase_UpdateTransactionStatus(t *testing.T) {
 			initMock: func() transaction.TransactionUsecase {
 				t := transaction2.NewMockRepository(ctrl)
 				u := merchant.NewMockUsecase(ctrl)
-				return NewTransactionUsecase(t, u)
+				p := product.NewMockUsecase(ctrl)
+				return NewTransactionUsecase(t, u, p)
 			},
 		},
 		{
@@ -170,14 +183,15 @@ func TestTransactionUsecase_UpdateTransactionStatus(t *testing.T) {
 			args: args{
 				request: request.UpdateTransactionRequest{
 					TransactionId: "1",
-					Status:        "Fail",
+					Status:        transaction_status.OTHER,
 				},
 			},
 			wantErr: true,
 			initMock: func() transaction.TransactionUsecase {
 				t := transaction2.NewMockRepository(ctrl)
 				u := merchant.NewMockUsecase(ctrl)
-				return NewTransactionUsecase(t, u)
+				p := product.NewMockUsecase(ctrl)
+				return NewTransactionUsecase(t, u, p)
 			},
 		},
 	}
@@ -215,7 +229,8 @@ func TestTransactionUsecase_GetTransactionById(t *testing.T) {
 			initMock: func() transaction.TransactionUsecase {
 				t := transaction2.NewMockRepository(ctrl)
 				u := merchant.NewMockUsecase(ctrl)
-				return NewTransactionUsecase(t, u)
+				p := product.NewMockUsecase(ctrl)
+				return NewTransactionUsecase(t, u, p)
 			},
 		},
 		{
@@ -227,7 +242,8 @@ func TestTransactionUsecase_GetTransactionById(t *testing.T) {
 			initMock: func() transaction.TransactionUsecase {
 				t := transaction2.NewMockRepository(ctrl)
 				u := merchant.NewMockUsecase(ctrl)
-				return NewTransactionUsecase(t, u)
+				p := product.NewMockUsecase(ctrl)
+				return NewTransactionUsecase(t, u, p)
 			},
 		},
 	}
@@ -265,7 +281,8 @@ func TestTransactionUsecase_GetTransactionHistory(t *testing.T) {
 			initMock: func() transaction.TransactionUsecase {
 				t := transaction2.NewMockRepository(ctrl)
 				u := merchant.NewMockUsecase(ctrl)
-				return NewTransactionUsecase(t, u)
+				p := product.NewMockUsecase(ctrl)
+				return NewTransactionUsecase(t, u, p)
 			},
 		},
 		{
@@ -277,7 +294,8 @@ func TestTransactionUsecase_GetTransactionHistory(t *testing.T) {
 			initMock: func() transaction.TransactionUsecase {
 				t := transaction2.NewMockRepository(ctrl)
 				u := merchant.NewMockUsecase(ctrl)
-				return NewTransactionUsecase(t, u)
+				p := product.NewMockUsecase(ctrl)
+				return NewTransactionUsecase(t, u, p)
 			},
 		},
 	}

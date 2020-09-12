@@ -19,10 +19,11 @@ type Merchant struct {
 type MerchantRepository interface {
 	UpdateMerchantBalance(amount int, merchantId string) error
 	GetMerchantBalance(merchantId string) (int, error)
-	RegisterMerchant(merchant Merchant) error
+	RegisterMerchant(merchant Merchant) (*Merchant, error)
 	GetMerchants() ([]Merchant, error)
 	GetMerchantById(merchantId string) (*Merchant, error)
-	GetMerchantsByUser(userId string) ([]Merchant, error)
+	UpdateMerchantApprovalStatus(merchantId string, status string) error
+	UpdateMerchant(merchantId string, merchant Merchant) error
 }
 
 type MerchantUsecase interface {
@@ -31,12 +32,14 @@ type MerchantUsecase interface {
 	RegisterMerchant(request merchant.MerchantRequest) error
 	GetMerchants() ([]Merchant, error)
 	GetMerchantById(merchantId string) (*Merchant, error)
-	GetMerchantsByUser(userId string) ([]Merchant, error)
+	UpdateMerchantApprovalStatus(request merchant.UpdateMerchantApprovalStatusRequest) error
+	UpdateMerchant(request merchant.UpdateMerchantRequest) error
 }
 type MerchantController interface {
 	GetMerchantBalance(echo echo.Context) error
 	GetMerchants(echo echo.Context) error
 	GetMerchantById(echo echo.Context) error
 	RegisterMerchant(echo echo.Context) error
-	GetMerchantsByUser(echo echo.Context) error
+	UpdateMerchantApprovalStatus(echo echo.Context) error
+	UpdateMerchant(echo echo.Context) error
 }

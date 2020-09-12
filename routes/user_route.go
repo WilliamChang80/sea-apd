@@ -12,13 +12,14 @@ import (
 type UserRoute struct {
 	controller domain.UserController
 	usecase    domain.UserUsecase
-	repository domain.UserRepository
+	Repository domain.UserRepository
 }
 
 func NewUserRoute(e *echo.Echo) UserRoute {
 	db := db.Postgres()
+	authRoute := NewAuthRoute(e)
 	repository := user.NewUserRepository(db)
-	u := usecase.NewUserUsecase(repository)
+	u := usecase.NewUserUsecase(repository, authRoute.usecase)
 	controller := controller.NewUserController(e, u)
 	if db != nil {
 		db.AutoMigrate(&domain.User{})
@@ -27,6 +28,6 @@ func NewUserRoute(e *echo.Echo) UserRoute {
 	return UserRoute{
 		controller: controller,
 		usecase:    u,
-		repository: repository,
+		Repository: repository,
 	}
 }

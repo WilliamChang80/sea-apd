@@ -2,10 +2,10 @@ package transaction
 
 import (
 	"errors"
-	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/williamchang80/sea-apd/domain"
 	"github.com/williamchang80/sea-apd/domain/transaction"
+	"reflect"
 )
 
 var (
@@ -15,14 +15,14 @@ var (
 		BankNumber: "",
 		BankName:   "",
 		Amount:     0,
-		UserId:     "",
+		CustomerId: "",
+		MerchantId: "",
 	}
 )
 
 type MockRepository struct {
 	ctrl *gomock.Controller
 }
-
 func NewMockRepository(ctrl *gomock.Controller) *MockRepository {
 	mock := &MockRepository{
 		ctrl: ctrl,
@@ -31,8 +31,7 @@ func NewMockRepository(ctrl *gomock.Controller) *MockRepository {
 }
 
 func (m MockRepository) CreateTransaction(transaction transaction.Transaction) error {
-	fmt.Printf("%#v", transaction)
-	if transaction == emptyTransaction {
+	if reflect.DeepEqual(transaction, emptyTransaction) {
 		return errors.New("Transaction cannot be empty")
 	}
 	return nil
@@ -57,4 +56,12 @@ func (m MockRepository) GetTransactionByRequiredStatus(requiredStatus []string, 
 		return nil, errors.New("Cannot Get Required status with empty user id")
 	}
 	return []transaction.Transaction{}, nil
+}
+
+func (m MockRepository) GetMerchantRequestItem(merchantId string) ([]transaction.Transaction, error) {
+	panic("implement me")
+}
+
+func (m MockRepository) UpdateTransaction(transaction transaction.Transaction) error {
+	panic("implement me")
 }

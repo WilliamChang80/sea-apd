@@ -7,6 +7,7 @@ import (
 	"github.com/williamchang80/sea-apd/domain"
 	"github.com/williamchang80/sea-apd/dto/request/admin"
 	"github.com/williamchang80/sea-apd/dto/request/auth"
+	"github.com/williamchang80/sea-apd/dto/request/user"
 )
 
 // User ...
@@ -27,10 +28,17 @@ type UserRepository interface {
 // AdminUsecase ...
 type AdminUsecase interface {
 	RegisterAdmin(admin.Admin) error
+	GetUserByEmail(email string) (*User, error)
+	UpdateUserRole(role string, userId string) error
+	GetUserById(userId string) (*User, error)
+	UpdateUser(User) error
 }
 
 type UserUsecase interface {
 	CreateUser(request auth.RegisterUserRequest) error
+	UpdateUserRole(request user.UpdateUserRoleRequest) error
+	GetUserById(userId string) (*User, error)
+	UpdateUser(request user.UpdateUserRequest) error
 }
 
 // AdminController ...
@@ -40,6 +48,7 @@ type AdminController interface {
 
 type UserController interface {
 	CreateUser(echo.Context) error
+	UpdateUser(echo.Context) error
 }
 
 // BeforeCreate is a gorm hook
