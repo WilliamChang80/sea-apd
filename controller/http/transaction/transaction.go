@@ -136,6 +136,15 @@ func (t *TransactionController) PayTransaction(c echo.Context) error {
 }
 
 func (t *TransactionController) AddCartItem(c echo.Context) error {
+	var request transaction2.CartRequest
+	c.Bind(&request)
+	err := t.usecase.AddCartItem(request)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &base.BaseResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
 	return c.JSON(http.StatusOK, base.BaseResponse{
 		Code:    http.StatusOK,
 		Message: message.SUCCESS,
@@ -143,6 +152,15 @@ func (t *TransactionController) AddCartItem(c echo.Context) error {
 }
 
 func (t *TransactionController) RemoveCartItem(c echo.Context) error {
+	var request transaction2.CartRequest
+	c.Bind(&request)
+	err := t.usecase.RemoveCartItem(request)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &base.BaseResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
 	return c.JSON(http.StatusOK, base.BaseResponse{
 		Code:    http.StatusOK,
 		Message: message.SUCCESS,
@@ -150,6 +168,15 @@ func (t *TransactionController) RemoveCartItem(c echo.Context) error {
 }
 
 func (t *TransactionController) UpdateCartItem(c echo.Context) error {
+	var request transaction2.CartRequest
+	c.Bind(&request)
+	err := t.usecase.UpdateCartItem(request)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &base.BaseResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
 	return c.JSON(http.StatusOK, base.BaseResponse{
 		Code:    http.StatusOK,
 		Message: message.SUCCESS,
@@ -157,8 +184,21 @@ func (t *TransactionController) UpdateCartItem(c echo.Context) error {
 }
 
 func (t *TransactionController) GetCartItems(c echo.Context) error {
-	return c.JSON(http.StatusOK, base.BaseResponse{
-		Code:    http.StatusOK,
-		Message: message.SUCCESS,
+	id := c.QueryParam("transactionId")
+	carts, err := t.usecase.GetCartItems(id)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, &base.BaseResponse{
+			Code:    http.StatusNotFound,
+			Message: message.NOT_FOUND,
+		})
+	}
+	return c.JSON(http.StatusOK, &response.GetCartItemsResponse{
+		BaseResponse: base.BaseResponse{
+			Code:    http.StatusOK,
+			Message: message.SUCCESS,
+		},
+		Data: domain.CartDto{
+			CartItems: carts,
+		},
 	})
 }
