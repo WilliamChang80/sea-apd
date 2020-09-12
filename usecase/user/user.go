@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+
 	auth2 "github.com/williamchang80/sea-apd/common/auth"
 	"github.com/williamchang80/sea-apd/common/constants/user_role"
 	"github.com/williamchang80/sea-apd/domain"
