@@ -2,10 +2,11 @@ package transaction
 
 import (
 	"errors"
+	"reflect"
+
 	"github.com/golang/mock/gomock"
 	"github.com/williamchang80/sea-apd/domain"
 	"github.com/williamchang80/sea-apd/domain/transaction"
-	"reflect"
 )
 
 var (
@@ -23,6 +24,7 @@ var (
 type MockRepository struct {
 	ctrl *gomock.Controller
 }
+
 func NewMockRepository(ctrl *gomock.Controller) *MockRepository {
 	mock := &MockRepository{
 		ctrl: ctrl,
@@ -63,5 +65,21 @@ func (m MockRepository) GetMerchantRequestItem(merchantId string) ([]transaction
 }
 
 func (m MockRepository) UpdateTransaction(transaction transaction.Transaction) error {
+	panic("implement me")
+}
+
+func (m MockRepository) AddCartItem(cart transaction.ProductTransaction) error {
+	panic("implement me")
+}
+
+func (m MockRepository) RemoveCartItem(cart transaction.ProductTransaction) error {
+	panic("implement me")
+}
+
+func (m MockRepository) UpdateCartItem(cart transaction.ProductTransaction) error {
+	panic("implement me")
+}
+
+func (m MockRepository) GetCartItems(id string) ([]transaction.ProductTransaction, error) {
 	panic("implement me")
 }

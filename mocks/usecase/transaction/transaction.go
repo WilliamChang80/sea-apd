@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"errors"
+
 	"github.com/golang/mock/gomock"
 	domain "github.com/williamchang80/sea-apd/domain/transaction"
 	"github.com/williamchang80/sea-apd/dto/request/transaction"
@@ -13,8 +14,6 @@ var emptyUpdateTransactionStatusRequest = transaction.UpdateTransactionRequest{}
 type MockUsecase struct {
 	ctrl *gomock.Controller
 }
-
-
 
 func NewMockUsecase(repo *gomock.Controller) *MockUsecase {
 	return &MockUsecase{
@@ -55,5 +54,21 @@ func (m MockUsecase) GetMerchantRequestItem(merchantId string) ([]domain.Transac
 }
 
 func (m MockUsecase) PayTransaction(request transaction.PaymentRequest) error {
+	panic("implement me")
+}
+
+func (m MockUsecase) AddCartItem(request transaction.CartRequest) error {
+	panic("implement me")
+}
+
+func (m MockUsecase) RemoveCartItem(request transaction.CartRequest) error {
+	panic("implement me")
+}
+
+func (m MockUsecase) UpdateCartItem(request transaction.CartRequest) error {
+	panic("implement me")
+}
+
+func (m MockUsecase) GetCartItems(id string) ([]domain.ProductTransaction, error) {
 	panic("implement me")
 }

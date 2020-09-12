@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo"
 	message "github.com/williamchang80/sea-apd/common/constants/response"
 	"github.com/williamchang80/sea-apd/domain/transaction"
@@ -8,7 +10,6 @@ import (
 	transaction2 "github.com/williamchang80/sea-apd/dto/request/transaction"
 	"github.com/williamchang80/sea-apd/dto/response/base"
 	response "github.com/williamchang80/sea-apd/dto/response/transaction"
-	"net/http"
 )
 
 type TransactionController struct {
@@ -23,6 +24,10 @@ func NewTransactionController(e *echo.Echo, t transaction.TransactionUsecase) tr
 	e.GET("/api/transactions/history", c.GetTransactionHistory)
 	e.GET("/api/transactions/request", c.GetMerchantRequestItem)
 	e.POST("/api/transaction/payment", c.PayTransaction)
+	e.POST("/api/transaction/cart", c.AddCartItem)
+	e.DELETE("/api/transaction/cart", c.RemoveCartItem)
+	e.PUT("/api/transaction/cart", c.UpdateCartItem)
+	e.GET("/api/transaction/cart", c.GetCartItems)
 	return c
 }
 
@@ -124,6 +129,34 @@ func (t *TransactionController) PayTransaction(c echo.Context) error {
 			Message: message.NOT_FOUND,
 		})
 	}
+	return c.JSON(http.StatusOK, base.BaseResponse{
+		Code:    http.StatusOK,
+		Message: message.SUCCESS,
+	})
+}
+
+func (t *TransactionController) AddCartItem(c echo.Context) error {
+	return c.JSON(http.StatusOK, base.BaseResponse{
+		Code:    http.StatusOK,
+		Message: message.SUCCESS,
+	})
+}
+
+func (t *TransactionController) RemoveCartItem(c echo.Context) error {
+	return c.JSON(http.StatusOK, base.BaseResponse{
+		Code:    http.StatusOK,
+		Message: message.SUCCESS,
+	})
+}
+
+func (t *TransactionController) UpdateCartItem(c echo.Context) error {
+	return c.JSON(http.StatusOK, base.BaseResponse{
+		Code:    http.StatusOK,
+		Message: message.SUCCESS,
+	})
+}
+
+func (t *TransactionController) GetCartItems(c echo.Context) error {
 	return c.JSON(http.StatusOK, base.BaseResponse{
 		Code:    http.StatusOK,
 		Message: message.SUCCESS,

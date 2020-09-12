@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"errors"
+
 	"github.com/williamchang80/sea-apd/common/constants/transaction_status"
 	"github.com/williamchang80/sea-apd/common/observer"
 	"github.com/williamchang80/sea-apd/domain/merchant"
@@ -24,7 +26,7 @@ type TransactionObserver struct {
 
 func NewTransactionUsecase(repo transaction.TransactionRepository,
 	merchantUseCase merchant.MerchantUsecase, productUsecase product.
-ProductUsecase) transaction.TransactionUsecase {
+		ProductUsecase) transaction.TransactionUsecase {
 	obs = CreateObserverable()
 	obs.AttachObservers()
 	return &TransactionUsecase{tr: repo,
@@ -59,7 +61,7 @@ func CreateObserverable() *TransactionObserver {
 }
 
 func (t TransactionUsecase) UpdateTransactionStatus(request transaction2.
-UpdateTransactionRequest) error {
+	UpdateTransactionRequest) error {
 	status := transaction_status.ToString(request.Status)
 	tran, err := t.tr.UpdateTransactionStatus(status, request.TransactionId)
 	if err != nil {
@@ -80,7 +82,7 @@ func (t TransactionUsecase) GetTransactionById(id string) (*transaction.Transact
 }
 
 func (t TransactionUsecase) GetTransactionHistory(userId string) ([]transaction.
-Transaction, error) {
+	Transaction, error) {
 	requiredStatusForTransactionHistory := transaction_status.GetStatusListForTransactionHistory()
 	tr, err := t.tr.GetTransactionByRequiredStatus(requiredStatusForTransactionHistory, userId)
 	if err != nil {
@@ -119,4 +121,70 @@ func (t TransactionUsecase) PayTransaction(request transaction2.PaymentRequest) 
 		return err
 	}
 	return nil
+}
+
+func ConvertCartRequest(req transaction2.CartRequest) transaction.ProductTransaction {
+	return transaction.ProductTransaction{
+		ProductId:     req.ProductId,
+		TransactionId: req.TransactionId,
+		Quantity:      req.Quantity,
+	}
+}
+
+func CheckOnCart(t TransactionUsecase, transactionId string) error {
+	trs, err := t.tr.GetTransactionById(transactionId)
+	if err != nil {
+		return err
+	}
+	if transaction_status.ParseToEnum(trs.Status) != transaction_status.ON_CARTS {
+		return errors.New("Transaction's status is not on cart.")
+	}
+	return nil
+}
+
+func (t TransactionUsecase) AddCartItem(request transaction2.CartRequest) error {
+	errr := CheckOnCart(t, request.TransactionId)
+	if errr != nil {
+		return errr
+	}
+	ci := ConvertCartRequest(request)
+	err := t.tr.AddCartItem(ci)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t TransactionUsecase) RemoveCartItem(request transaction2.CartRequest) error {
+	errr := CheckOnCart(t, request.TransactionId)
+	if errr != nil {
+		return errr
+	}
+	ci := ConvertCartRequest(request)
+	err := t.tr.RemoveCartItem(ci)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t TransactionUsecase) UpdateCartItem(request transaction2.CartRequest) error {
+	errr := CheckOnCart(t, request.TransactionId)
+	if errr != nil {
+		return errr
+	}
+	ci := ConvertCartRequest(request)
+	err := t.tr.UpdateCartItem(ci)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t TransactionUsecase) GetCartItems(id string) ([]transaction.ProductTransaction, error) {
+	ci, err := t.tr.GetCartItems(id)
+	if err != nil {
+		return nil, err
+	}
+	return ci, nil
 }

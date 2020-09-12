@@ -63,3 +63,33 @@ func (t TransactionRepository) UpdateTransaction(transaction transaction.Transac
 	}
 	return nil
 }
+
+func (t TransactionRepository) AddCartItem(cart transaction.ProductTransaction) error {
+	if err := t.db.Create(&cart).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t TransactionRepository) RemoveCartItem(cart transaction.ProductTransaction) error {
+	if err := t.db.Where("transactionId = ? AND productId = ?", cart.TransactionId, cart.ProductId).Delete(&transaction.ProductTransaction{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t TransactionRepository) UpdateCartItem(cart transaction.ProductTransaction) error {
+	if err := t.db.Model(&cart).Where("transactionId = ? AND productId = ?", cart.TransactionId, cart.ProductId).Update(&cart).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t TransactionRepository) GetCartItems(id string) ([]transaction.ProductTransaction, error) {
+	var cartItems []transaction.ProductTransaction
+	err := t.db.Where("transaction_id = ?", id).Find(&cartItems).Error
+	if err != nil {
+		return nil, err
+	}
+	return cartItems, nil
+}

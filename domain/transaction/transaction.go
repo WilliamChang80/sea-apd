@@ -1,22 +1,23 @@
 package transaction
 
 import (
+	"time"
+
 	"github.com/labstack/echo"
 	"github.com/williamchang80/sea-apd/domain"
 	"github.com/williamchang80/sea-apd/dto/request/transaction"
-	"time"
 )
 
 type Transaction struct {
 	domain.Base
-	BankNumber string `json:"bank_number"`
-	BankName   string `json:"bank_name"`
-	Amount     int    `json:"amount"`
-	CustomerId string `json:"customer_id"`
-	Status     string `json:"status"`
-	MerchantId string `json:"merchant_id"`
+	BankNumber     string               `json:"bank_number"`
+	BankName       string               `json:"bank_name"`
+	Amount         int                  `json:"amount"`
+	CustomerId     string               `json:"customer_id"`
+	Status         string               `json:"status"`
+	MerchantId     string               `json:"merchant_id"`
 	ProductDetails []ProductTransaction `json:"product_details" gorm:"many2many:product_transactions;
-								      AssociationForeignKey:TransactionId"`
+	AssociationForeignKey:TransactionId"`
 }
 
 type ProductTransaction struct {
@@ -34,6 +35,10 @@ type TransactionUsecase interface {
 	GetTransactionHistory(userId string) ([]Transaction, error)
 	GetMerchantRequestItem(merchantId string) ([]Transaction, error)
 	PayTransaction(request transaction.PaymentRequest) error
+	AddCartItem(request transaction.CartRequest) error
+	RemoveCartItem(request transaction.CartRequest) error
+	UpdateCartItem(request transaction.CartRequest) error
+	GetCartItems(id string) ([]ProductTransaction, error)
 }
 
 type TransactionController interface {
@@ -43,6 +48,10 @@ type TransactionController interface {
 	GetTransactionHistory(echo.Context) error
 	GetMerchantRequestItem(echo.Context) error
 	PayTransaction(echo.Context) error
+	AddCartItem(echo.Context) error
+	RemoveCartItem(echo.Context) error
+	UpdateCartItem(echo.Context) error
+	GetCartItems(echo.Context) error
 }
 
 type TransactionRepository interface {
@@ -52,4 +61,8 @@ type TransactionRepository interface {
 	GetTransactionByRequiredStatus(requiredStatus []string, userId string) ([]Transaction, error)
 	GetMerchantRequestItem(merchantId string) ([]Transaction, error)
 	UpdateTransaction(transaction Transaction) error
+	AddCartItem(cart ProductTransaction) error
+	RemoveCartItem(cart ProductTransaction) error
+	UpdateCartItem(cart ProductTransaction) error
+	GetCartItems(id string) ([]ProductTransaction, error)
 }
