@@ -24,10 +24,10 @@ func NewTransactionController(e *echo.Echo, t transaction.TransactionUsecase) tr
 	e.GET("/api/transactions/history", c.GetTransactionHistory)
 	e.GET("/api/transactions/request", c.GetMerchantRequestItem)
 	e.POST("/api/transaction/payment", c.PayTransaction)
-	e.POST("/api/transaction/cart", c.AddCartItem)
-	e.DELETE("/api/transaction/cart", c.RemoveCartItem)
-	e.PUT("/api/transaction/cart", c.UpdateCartItem)
-	e.GET("/api/transaction/cart", c.GetCartItems)
+	e.POST("/api/cart", c.AddCartItem)
+	e.DELETE("/api/cart", c.RemoveCartItem)
+	e.PUT("/api/cart", c.UpdateCartItem)
+	e.GET("/api/cart", c.GetCartItems)
 	return c
 }
 
