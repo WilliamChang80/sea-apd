@@ -61,9 +61,7 @@ const docs = `
     }
   ],
   "security": [
-    JWT
-    :
-    []
+    JWT:[]
   ],
   "securityDefinitions": {
     "JWT": {
