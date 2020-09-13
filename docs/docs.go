@@ -25,6 +25,9 @@ const docs = `
     },
     "version": "1.0"
   },
+  "schemes": [
+    "http"
+  ],
   "host": "137.116.136.106",
   "basePath": "/api",
   "tags": [
@@ -57,6 +60,19 @@ const docs = `
       "description": "Handle authentication and authorization"
     }
   ],
+  "security": [
+    JWT
+    :
+    []
+  ],
+  "securityDefinitions": {
+    "JWT": {
+      "description": "",
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "paths": {
     "/product": {
       "post": {
@@ -779,7 +795,7 @@ const docs = `
     "/auth/register": {
       "post": {
         "tags": [
-          "user"
+          "auth"
         ],
         "description": "Create User",
         "consumes": [
@@ -798,7 +814,7 @@ const docs = `
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "ok",
             "schema": {
               "$ref": "#/definitions/createdResponse"
