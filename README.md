@@ -3,7 +3,7 @@ Project for compfest 12 Software Engineering Academy by APD team
 
 `sea-apd` is an E-Commerce that help customers to buy what they want from top merchants
 
-it's a RESTFUL API that can be used through here [here](http://137.116.136.106) and the documentation with swagger [here](http://137.116.136.106/docs/index.html)
+it's a RESTFUL API that can be used through [here](http://137.116.136.106) and the documentation with swagger [here](http://137.116.136.106/docs/index.html)
 
 ## Project structure (Based on Clean Architecture)
 
